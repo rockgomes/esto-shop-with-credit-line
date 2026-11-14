@@ -97,7 +97,7 @@ export default function Checkout({
   };
 
   const where: Record<Step, string> = {
-    store: `You are on the ${store} site. This page is a stand-in. The store does not know if you have a credit line.`,
+    store: `You are on the ${store} site. You put the product in the cart, and this page is the checkout. This page is a stand-in. The store does not know if you have a credit line.`,
     login:
       'You are on ESTO. It has to know who you are before it can check your limit. ESTO identifies customers in its purchase flow today.',
     esto: "You are on ESTO's payment page. The new part is the Credit line option.",

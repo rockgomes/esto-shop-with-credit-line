@@ -1536,6 +1536,10 @@ a.src:hover {
   margin-bottom: 6px;
 }
 
+.tour-note {
+  margin-top: 8px;
+}
+
 .tour-btns {
   display: flex;
   flex-wrap: wrap;

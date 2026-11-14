@@ -54,11 +54,14 @@ function controlToTap(click: TourClick): { el: HTMLElement | null; isMenuButton:
  */
 export default function Tour({
   index,
+  note,
   onGo,
   onArrive,
   onEnd,
 }: {
   index: number;
+  /** One more line for the card of this step, when the tour changed something by itself. */
+  note?: string;
   /** Opens a step directly, with no path. */
   onGo: (index: number) => void;
   /** Called when the clicks of the path are done and the page of the step should be open. */
@@ -340,6 +343,7 @@ export default function Tour({
           <>
             <h2 id="tour-title">{step.title}</h2>
             <p id="tour-text">{step.text}</p>
+            {note && <p className="tour-note">{note}</p>}
             <p className="tour-btns">
               {index > 0 && (
                 <button className="btn ghost" onClick={() => jump(index - 1)}>

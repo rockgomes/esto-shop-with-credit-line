@@ -168,9 +168,18 @@ export default function ShopApp() {
           maxPrice: freeLimit(DEMO_ACCOUNT),
         })[0]?.id
       : undefined;
+  /** True after the reader paid in the demo. */
+  const [hasPurchase, setHasPurchase] = useState(false);
+  /** True after the tour added an example purchase, because the reader did not pay in the demo. */
+  const [tourExample, setTourExample] = useState(false);
+  /** The Transactions step needs a purchase to show. */
+  const needPurchase = (index: number) => {
+    if (TOUR[index].hash === '#/transactions' && !hasPurchase && tourProductId) setTourExample(true);
+  };
   const goTour = (index: number) => {
     const step = TOUR[index];
     setTour(index);
+    needPurchase(index);
     pickPhase(step.phase, step.product ? tourProductId : undefined, step.hash ?? '#/');
   };
   /** The tour clicked its way to a step. Open the step directly only if the clicks did not get there. */
@@ -179,8 +188,10 @@ export default function ShopApp() {
     const hash = window.location.hash || '#/';
     const there =
       readPhase() === step.phase && (step.product ? hash.startsWith('#/p/') : hash === (step.hash ?? '#/'));
-    if (there) setTour(index);
-    else goTour(index);
+    if (there) {
+      setTour(index);
+      needPurchase(index);
+    } else goTour(index);
   };
   const endTour = () => setTour(null);
 
@@ -270,6 +281,8 @@ export default function ShopApp() {
               onOther={notBuilt}
               phase={phase}
               inTour={tour !== null}
+              exampleProductId={tourExample ? tourProductId : undefined}
+              onPurchase={() => setHasPurchase(true)}
             />
           )}
           <p className="legal">
@@ -281,7 +294,19 @@ export default function ShopApp() {
           {notice}
         </p>
       </div>
-      {tour !== null && <Tour index={tour} onGo={goTour} onArrive={arriveTour} onEnd={endTour} />}
+      {tour !== null && (
+        <Tour
+          index={tour}
+          note={
+            tourExample && TOUR[tour].hash === '#/transactions'
+              ? 'You did not buy a product in the step before. So the tour added an example purchase: the first row of the table. No real order was made.'
+              : undefined
+          }
+          onGo={goTour}
+          onArrive={arriveTour}
+          onEnd={endTour}
+        />
+      )}
     </>
   );
 }
@@ -395,6 +420,8 @@ function Shop({
   onOther,
   phase,
   inTour,
+  exampleProductId,
+  onPurchase,
 }: {
   catalog: Catalog;
   history: PriceHistory;
@@ -404,6 +431,10 @@ function Shop({
   phase: Phase;
   /** True while the guided tour runs. */
   inTour: boolean;
+  /** The tour asks for an example purchase of this product, when the reader did not pay in the demo. */
+  exampleProductId: string | undefined;
+  /** Called when the reader pays in the demo. */
+  onPurchase: () => void;
 }) {
   const [account, setAccount] = useState<Account>(DEMO_ACCOUNT);
   const [query, setQuery] = useState('');
@@ -441,10 +472,31 @@ function Shop({
 
   const onWatch = (p: Product) => setWatches((w) => toggleWatch(w, p, today));
   const isWatched = (p: Product) => watches.some((w) => w.id === p.id);
-  const onBought = (purchase: Purchase) => {
+  const addPurchase = (purchase: Purchase) => {
     setPurchases((list) => [purchase, ...list]);
     setAccount((a) => ({ ...a, used: a.used + purchase.offer.price }));
   };
+  const onBought = (purchase: Purchase) => {
+    addPurchase(purchase);
+    onPurchase();
+  };
+  // The tour adds one example purchase, so its Transactions step has a row to show.
+  const [exampleDone, setExampleDone] = useState(false);
+  if (exampleProductId && !exampleDone) {
+    setExampleDone(true);
+    const product = realCatalog.products.find((p) => p.id === exampleProductId);
+    const offer = product?.offers[0];
+    if (product && offer && purchases.length === 0) {
+      addPurchase({
+        product,
+        offer,
+        months: DEFAULT_MONTHS,
+        monthly: plan(offer.price, account, DEFAULT_MONTHS).monthly,
+        date: new Date().toISOString(),
+        raise: minimumPayment(offer.price, account.rate),
+      });
+    }
+  }
   const changeQuery = (next: string) => {
     setQuery(next);
     setShown(PAGE_SIZE);
@@ -466,7 +518,7 @@ function Shop({
             phase={phase}
           />
         ) : page === 'transactions' ? (
-          <Transactions purchases={purchases} phase={phase} />
+          <Transactions purchases={purchases} />
         ) : page === 'credit' ? (
           <CreditLine
             account={account}
@@ -1171,11 +1223,14 @@ function shortDate(iso: string): string {
   );
 }
 
+/** The one withdrawal that explains the used part of the limit in the demo account. */
+const USED_WITHDRAWAL = { reference: '00418205533', date: '2026-10-02' };
+
 /**
  * The Transactions page, with the columns of the real one. A store purchase
  * from the credit line is a new type of row: ESTO pays the store.
  */
-function Transactions({ purchases, phase }: { purchases: Purchase[]; phase: Phase }) {
+function Transactions({ purchases }: { purchases: Purchase[] }) {
   return (
     <section aria-labelledby="tx-title">
       <h1 id="tx-title" className="page-title">
@@ -1211,21 +1266,20 @@ function Transactions({ purchases, phase }: { purchases: Purchase[]; phase: Phas
                 <td>{shortDate(b.date)}</td>
               </tr>
             ))}
-            {purchases.length === 0 && (
-              <tr>
-                <td colSpan={6} className="muted">
-                  {phase === 2
-                    ? 'No purchase yet. When you pay at a store from your credit line, it shows here as a row of the type "Purchase".'
-                    : 'Nothing to show yet.'}
-                </td>
-              </tr>
-            )}
+            <tr>
+              <td>{USED_WITHDRAWAL.reference}</td>
+              <td>Withdrawal</td>
+              <td>ESTO AS</td>
+              <td>You</td>
+              <td className="num">{money(DEMO_ACCOUNT.used)}</td>
+              <td>{shortDate(USED_WITHDRAWAL.date)}</td>
+            </tr>
           </tbody>
         </table>
       </div>
       <p className="muted small tx-note">
-        The columns are the ones of the real Transactions page. The real page lists your payments to ESTO.
-        They are left out here. "Purchase" is the new type of row in this concept.
+        The columns are the ones of the real Transactions page. "Purchase" is the new type of row in this
+        concept.
       </p>
     </section>
   );

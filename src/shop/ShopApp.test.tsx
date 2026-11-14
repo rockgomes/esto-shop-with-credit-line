@@ -54,7 +54,9 @@ describe('shop prototype', () => {
 
     await user.click(screen.getByRole('button', { name: /^Buy now at ONOFF/ }));
     const flow = screen.getByRole('dialog');
-    expect(flow).toHaveTextContent('You are on the ONOFF site. This page is a stand-in.');
+    expect(flow).toHaveTextContent(
+      'You are on the ONOFF site. You put the product in the cart, and this page is the checkout. This page is a stand-in.',
+    );
     await user.click(within(flow).getByRole('radio', { name: /Card/ }));
     expect(within(flow).getByRole('button', { name: 'Continue to ESTO' })).toBeDisabled();
     await user.click(within(flow).getByRole('radio', { name: /ESTO/ }));
@@ -280,6 +282,13 @@ describe('shop prototype', () => {
     expect(window.location.search).toBe('?phase=2');
     expect(window.location.hash).toMatch(/^#\/p\//);
     expect(screen.getByText('Phase 2, step 5 of 8')).toBeInTheDocument();
+
+    // The reader did not buy, so the tour adds an example purchase and says so.
+    await user.click(screen.getByRole('button', { name: 'Next: Pay with the credit line' }));
+    await user.click(screen.getByRole('button', { name: 'Next: Transactions' }));
+    expect(screen.getByText(/the tour added an example purchase/)).toBeInTheDocument();
+    expect(screen.getAllByRole('row')[1]).toHaveTextContent('Purchase');
+    expect(screen.getAllByRole('row')[2]).toHaveTextContent('Withdrawal');
 
     await user.click(screen.getByRole('button', { name: 'End the tour' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();

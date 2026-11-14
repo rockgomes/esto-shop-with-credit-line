@@ -81,15 +81,15 @@ export const TOUR: TourStep[] = [
     product: true,
     target: '.proto-tag',
     title: 'The tour now changes to Phase 2',
-    text: 'Phase 1 ends here. Phase 2 adds one thing: the customer pays the store with the credit line. The product page is the same page as before, now in Phase 2.',
+    text: 'Phase 1 ends here. Phase 2 adds one thing: the customer pays for the product using the credit line at checkout. The product page is the same page as before, now in Phase 2.',
   },
   {
     name: 'Pay with the credit line',
     phase: 2,
     product: true,
     target: 'section[aria-labelledby="offers-title"]',
-    title: 'The customer pays the store with the credit line',
-    text: 'The button takes the customer to the store checkout, and then to ESTO\'s payment page, where they choose "Credit line". The customer fills in no application and signs no new contract. You can click the button to try. No real order is made.',
+    title: 'The customer pays for the product using the credit line at checkout',
+    text: 'The button takes the customer to the product page at the store. At the store checkout, the customer chooses ESTO. Then, on ESTO\'s payment page, they choose "Credit line". The customer fills in no application and signs no new contract. You can click the button to try. No real order is made.',
   },
   {
     name: 'Transactions',
