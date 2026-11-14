@@ -401,7 +401,11 @@ export default function Start({
               </Pt>
               <Pt n="2.9">
                 On the product page inside the ESTO app, one bar shows the limit before and after the
-                purchase. The page also says in plain numbers how the customer pays it back.
+                purchase. The page also says in plain numbers how the customer pays it back. The page has two
+                buttons. The first button opens the product page at the store. The second button takes the
+                price of the product out of the limit. In Phase 2, the buttons do the same things, but the
+                first button has a new label. The label tells the customer to use the credit line at the store
+                checkout, and that it has no fees.
               </Pt>
               <Pt n="2.10">
                 The customer can watch a price. ESTO sends an email when a store goes lower. The email gives
@@ -454,53 +458,64 @@ export default function Start({
               These counts show where customers stop. Late payments and complaints to support must not go up.
             </p>
             <p>
-              We test with two random groups of credit line customers for 8 weeks. One group sees the new
-              parts, and the other group sees the app as it is today.
+              We test with two random groups of credit line customers for 8 weeks. The test group gets the app
+              with the changes from this concept. The control group gets the app as it is today.
             </p>
-            <More label="the test, the four steps we follow, and one risk">
+            <More label="the test, the five steps we count, and one risk">
               <Pt n="3.2">
-                We run a test like this: we pick credit line customers at random and split them into two
-                groups of the same size. One group sees the new parts in the app. The other group sees the app
-                as it is today. We pick at random so that the two groups are alike, and the new parts are the
-                only difference between them.
+                We run a test like this. We pick credit line customers at random, and we split them into two
+                groups of the same size. The test group gets the app with "Find products" and the other
+                changes from this concept. The control group gets the app as it is today. Because we pick at
+                random, the two groups are alike. So, if the test group buys more, the concept is the reason.
               </Pt>
               <Pt n="3.3">
                 The test runs for 8 weeks. We need to see purchases, and we also need to see the payments come
-                back. Most people get paid once a month, so 8 weeks gives two pay months. This is our
-                assumption. ESTO's own purchase numbers can make the test shorter or longer. After the test,
-                everyone gets the new parts.
+                back. 8 weeks gives us 2 months of possible repayments. This is our assumption. ESTO's own
+                purchase numbers can make the test shorter or longer. After the test, every customer gets the
+                app with the changes.
               </Pt>
               <Pt n="3.4">
                 After 8 weeks, we compare the two groups. In Phase 1, we compare two numbers that ESTO already
                 has: purchases at partner stores paid through ESTO, and withdrawals from the limit. In Phase
-                2, we compare the share of the credit limit that is in use. If the group with the new parts is
-                higher, the concept works.
+                2, we compare the share of the credit limit that is in use. If the numbers of the test group
+                are higher, the concept works.
               </Pt>
               <Pt n="3.5">
-                Inside the group with the new parts, we follow the path step by step, to see where people
-                stop. The first three steps are the same in Phase 1 and in Phase 2. The fourth step exists
-                only in Phase 2.
+                In the test group, we count how many customers do each step in the list below (3.5.1 to
+                3.5.5). The steps are in the order in which a customer does them, so the list is a funnel. The
+                counts show at which step we lose the most customers.
               </Pt>
-              <Pt n="3.5.1">In both phases: how many open "Find products".</Pt>
+              <Pt n="3.5.1">The customer opens "Find products".</Pt>
               <Pt n="3.5.2">
-                In both phases: how many go from a product to the store. We also keep what people search for
-                and do not find. That list tells us which products and stores to add.
+                The customer clicks the Buy button. We also keep what people search for and do not find. That
+                list tells us which products and stores to add.
               </Pt>
               <Pt n="3.5.3">
-                In both phases: how many then buy that product. In Phase 1, the customer pays with cash from a
-                withdrawal, or with another ESTO method at the store checkout. We count both.
+                The customer buys at the store. We can count the purchases that the customer pays with an ESTO
+                method. We cannot count the purchases that the customer pays another way, for example with a
+                bank card. In Phase 1, we also count the customers who click "Take out" on the product page
+                and finish the withdrawal. We treat such a withdrawal as a sign of a purchase, because the
+                customer started it from a product.
               </Pt>
               <Pt n="3.5.4">
-                In Phase 2 only: how many choose "Credit line" on ESTO's payment page, where it sits next to
-                ESTO 3 and Pay Later, which cost no interest.
+                In Phase 2 only: the customer chooses "Credit line" on ESTO's payment page. We also count how
+                many customers choose ESTO 3 or Pay Later there, because of the risk in 3.5.6.
               </Pt>
               <Pt n="3.5.5">
+                The customer buys a second time. When the customer pays back the first purchase, the limit in
+                use goes down again. It stays up only if the customer buys again.
+              </Pt>
+              <Pt n="3.5.6">
                 There is one risk in Phase 2. ESTO 3 and Pay Later cost the customer no interest, so a
                 customer may choose them and not the credit line. ESTO still earns a fee from the store on
                 that purchase, but the unused limit stays unused. The number in 3.5.4 shows how often
                 customers choose each method.
               </Pt>
-              <Pt n="3.6">The step where most people stop is the next thing we fix.</Pt>
+              <Pt n="3.6">
+                The step where we lose the most customers is the step we look at first. The count does not
+                tell us why customers stop there. To learn why, we ask customers, and then we decide what to
+                change. ESTO cannot change some things, such as the store's website.
+              </Pt>
               <Pt n="3.7">Two numbers must not get worse: late payments, and complaints to support.</Pt>
             </More>
           </section>
