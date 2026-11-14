@@ -751,6 +751,23 @@ a {
   padding: 13px 20px;
 }
 
+.btn.buy + .btn.buy {
+  margin-top: 12px;
+}
+
+/* A button with a second, smaller line that says what the action costs. */
+.btn.has-sub {
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 20px;
+  font-size: 16px;
+}
+
+.btn-sub {
+  font-size: 12px;
+  font-weight: 400;
+}
+
 .btn.green {
   background: var(--green);
   color: #ffffff;
@@ -1383,6 +1400,163 @@ a.src:hover {
 
 @media (prefers-reduced-motion: reduce) {
   .wu-more[open] .wu-pts {
+    animation: none;
+  }
+}
+
+/* ─── Guided tour ───────────────────────────────────────────────────── */
+
+/* The bright part of the page. The shadow makes the rest of the page dark. */
+.tour-hole {
+  position: fixed;
+  z-index: 40;
+  border-radius: 18px;
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 0 200vmax rgb(10 10 10 / 0.55);
+  pointer-events: none;
+  transition:
+    top 0.3s var(--ease),
+    left 0.3s var(--ease),
+    width 0.3s var(--ease),
+    height 0.3s var(--ease);
+}
+
+.tour-card {
+  position: fixed;
+  z-index: 41;
+  width: min(380px, calc(100vw - 32px));
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: var(--card);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.25);
+  transition:
+    top 0.3s var(--ease),
+    left 0.3s var(--ease),
+    opacity 0.2s;
+}
+
+/* The card steps away while the cursor shows the way to the next step. */
+.tour-card.is-away {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* A drawn cursor that clicks the way to the next step. */
+.tour-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  pointer-events: none;
+  transition: translate 0.75s cubic-bezier(0.45, 0, 0.2, 1);
+}
+
+.tour-cursor svg {
+  display: block;
+  margin: -3px 0 0 -5px;
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.35));
+  transform-origin: 5px 3px;
+  transition: scale 0.15s;
+}
+
+.tour-cursor.is-press svg {
+  scale: 0.8;
+}
+
+.tour-cursor::before {
+  content: '';
+  position: absolute;
+  top: -18px;
+  left: -18px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgb(10 10 10 / 0.18);
+  opacity: 0;
+  scale: 0.4;
+}
+
+.tour-cursor.is-press::before {
+  animation: tour-press 0.45s ease-out;
+}
+
+@keyframes tour-press {
+  from {
+    opacity: 1;
+    scale: 0.4;
+  }
+  to {
+    opacity: 0;
+    scale: 1.3;
+  }
+}
+
+.tour-card:focus {
+  outline: none;
+}
+
+/* The arrow that points at the bright part. */
+.tour-card.is-above::after,
+.tour-card.is-below::after {
+  content: '';
+  position: absolute;
+  left: 40px;
+  width: 16px;
+  height: 16px;
+  background: var(--card);
+  rotate: 45deg;
+}
+
+.tour-card.is-above::after {
+  bottom: -7px;
+}
+
+.tour-card.is-below::after {
+  top: -7px;
+}
+
+.tour-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.tour-top .link {
+  padding: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.tour-card h2 {
+  margin-bottom: 6px;
+}
+
+.tour-btns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.tour-btns .btn {
+  padding: 10px 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tour-hole,
+  .tour-card,
+  .tour-cursor,
+  .tour-cursor svg {
+    transition: none;
+  }
+
+  .tour-cursor.is-press::before {
     animation: none;
   }
 }

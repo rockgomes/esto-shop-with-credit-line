@@ -81,7 +81,7 @@ export function CreditHow({
                 <ol>
                   <li>Choose an amount.</li>
                   <li>The money goes to your bank account.</li>
-                  <li>It arrives in 1 to 3 working days, or at once for 19,90 €.</li>
+                  <li>It arrives in 1 to 3 working days, or now for 19,90 €.</li>
                 </ol>
                 <button className="btn" onClick={() => onOther('Withdraw money')}>
                   Withdraw money
@@ -138,7 +138,7 @@ export function CreditHow({
           </div>
           <div>
             <dt>Withdrawal to your bank account</dt>
-            <dd>1 to 3 working days, or at once for 19,90 €</dd>
+            <dd>1 to 3 working days, or now for 19,90 €</dd>
           </div>
         </dl>
       </section>
@@ -159,7 +159,7 @@ export function CreditFaq({ phase }: { phase: Phase }) {
     },
     {
       q: 'How does the renewing limit work?',
-      a: 'A part of every monthly payment pays back what you used. That part is free to use again at once. You do not apply again.',
+      a: 'A part of every monthly payment pays back what you used. That part is free to use again immediately. You do not apply again.',
     },
     {
       q: 'Why do the monthly payments decrease?',
@@ -167,7 +167,7 @@ export function CreditFaq({ phase }: { phase: Phase }) {
     },
     {
       q: 'How fast is the money on my account?',
-      a: 'A withdrawal takes 1 to 3 working days. With the instant payment, for 19,90 €, the money arrives at once.',
+      a: 'A withdrawal takes 1 to 3 working days. With the instant payment, for 19,90 €, the money arrives now.',
     },
     {
       q: 'Can I repay everything early?',

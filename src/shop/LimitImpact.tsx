@@ -5,7 +5,16 @@ import { freeLimit, isHighUse, type Account } from './credit';
 const whole = (cents: Cents) => formatWhole(cents, 'et');
 
 /** What one purchase does to the limit. Shown next to the buy button. */
-export default function LimitImpact({ account, price }: { account: Account; price: Cents }) {
+export default function LimitImpact({
+  account,
+  price,
+  withCash = false,
+}: {
+  account: Account;
+  price: Cents;
+  /** Phase 1: the limit changes only if the customer takes the money out of it. */
+  withCash?: boolean;
+}) {
   const free = freeLimit(account);
   if (price > free) {
     return (
@@ -18,7 +27,8 @@ export default function LimitImpact({ account, price }: { account: Account; pric
   return (
     <div className={`impact${isHighUse(account) ? ' is-high-use' : ''}`}>
       <p className="impact-title">
-        Your limit after this purchase: <strong>{whole(free - price)} free</strong>
+        {withCash ? 'Your limit, if you pay with money from it: ' : 'Your limit after this purchase: '}
+        <strong>{whole(free - price)} free</strong>
       </p>
       <div className="bar" aria-hidden="true">
         <i className="seg-used" style={{ flexGrow: account.used }} />

@@ -130,9 +130,11 @@ function Pt({ n, children }: { n: string; children: ReactNode }) {
 export default function Start({
   catalog,
   onOpen,
+  onTour,
 }: {
   catalog: Catalog | null;
   onOpen: (phase: Phase, productId?: string, hash?: string) => void;
+  onTour: () => void;
 }) {
   const current = useCurrentPart();
   const see = (phase: Phase, hash: string, label: string) => (
@@ -157,17 +159,23 @@ export default function Start({
             them.
           </p>
           <p>
-            <strong>The idea: ESTO puts real products from its partner stores next to the limit.</strong>
+            <strong>
+              The idea: ESTO puts real products from its partner stores next to the limit. Then the customer
+              pays for them with the credit line, at the store checkout.
+            </strong>
           </p>
         </div>
         <div className="wu-go">
           <button className="btn" onClick={() => onOpen(1)}>
             Open the prototype
           </button>
+          <button className="btn outline" onClick={onTour}>
+            Take the tour
+          </button>
           <span className="muted small" aria-live="polite">
             {catalog
-              ? `It runs on ${catalog.products.length.toLocaleString('en-GB')} real products and today's prices from ${catalog.stores.length} ESTO partner stores.`
-              : 'It runs on real products and today’s prices from ESTO partner stores.'}
+              ? `The prototype runs on ${catalog.products.length.toLocaleString('en-GB')} real products and today's prices from ${catalog.stores.length} ESTO partner stores.`
+              : 'The prototype runs on real products and today’s prices from ESTO partner stores.'}
           </span>
         </div>
       </header>
@@ -228,6 +236,7 @@ export default function Start({
               So a customer with a free limit has no reason to use it until the day they need cash. ESTO earns
               nothing on a limit that is not used.
             </p>
+            <p>As a result, ESTO has the money, but not the trigger. This concept aims to change that.</p>
             <More label="what ESTO loses, the customer, and the stores">
               <Pt n="1.1">
                 The problem: customers do not use the credit that ESTO has already given them. About 150
@@ -275,7 +284,7 @@ export default function Start({
               </Pt>
               <Pt n="1.10">The app has no list of the stores that work with ESTO.</Pt>
               <Pt n="1.11">
-                Cash from the limit takes 1 to 3 working days, or it costs 19,90 euros to get it at once.
+                Cash from the limit takes 1 to 3 working days, or it costs 19,90 euros to get it now.
               </Pt>
               <Pt n="1.12">
                 At a partner store checkout, a customer with a free limit still fills in an application and
@@ -296,8 +305,10 @@ export default function Start({
               2. The idea
             </h2>
             <p>
-              The idea is to turn the limit from money into things. The customer finds the phone inside ESTO,
-              sees what it costs them each month, and buys it at a partner store.
+              The idea is to turn the limit from money into products, in two steps. In Phase 1, the customer
+              finds a product inside ESTO, such as a phone or a sofa, and sees what it costs them each month.
+              In Phase 2, the customer also pays for it with the credit line, at the checkout of the partner
+              store, with no application and no new contract.
             </p>
             <p>
               The customer gets the credit the same way as before. What changes is where ESTO sits in the
@@ -436,10 +447,11 @@ export default function Start({
               3. How to measure impact
             </h2>
             <p>
-              We measure one thing in each phase. In Phase 1, we measure how many customers buy at a partner
-              store with ESTO. In Phase 2, we measure the share of the credit limit that is in use. Today that
-              share is about 30%.
-              <S n={1} />
+              In Phase 1, the test passes if more customers buy at partner stores through ESTO. In Phase 2,
+              the test passes if the share of the credit limit in use goes up. Today that share is about 30%.
+              <S n={1} /> We fix these two pass rules before the test starts. We also count how many customers
+              open "Find products", how many go to the store, how many buy, and how many buy a second time.
+              These counts show where customers stop. Late payments and complaints to support must not go up.
             </p>
             <p>
               We test with two random groups of credit line customers for 8 weeks. One group sees the new
@@ -566,7 +578,7 @@ export default function Start({
               Phase 1 has four steps and needs nothing new from the stores. I found the product feeds for the
               prototype myself, and I asked no store for anything.
             </p>
-            <p>Phase 2 has five steps. Two of them are questions that only ESTO can answer.</p>
+            <p>Phase 2 has five steps. Three of them need an answer from ESTO.</p>
             <More label="the nine steps">
               <Pt n="5.1">Phase 1 has four steps:</Pt>
               <Pt n="5.2">

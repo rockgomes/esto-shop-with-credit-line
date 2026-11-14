@@ -52,7 +52,7 @@ describe('shop prototype', () => {
     expect(offers[0]).toHaveTextContent('Lowest');
     expect(offers[1]).toHaveTextContent('2 to 4 working days');
 
-    await user.click(screen.getByRole('button', { name: 'Buy at ONOFF with your credit line' }));
+    await user.click(screen.getByRole('button', { name: /^Buy now at ONOFF/ }));
     const flow = screen.getByRole('dialog');
     expect(flow).toHaveTextContent('You are on the ONOFF site. This page is a stand-in.');
     await user.click(within(flow).getByRole('radio', { name: /Card/ }));
@@ -179,7 +179,7 @@ describe('shop prototype', () => {
     // After a purchase: the explanation is gone, and the latest purchase shows.
     await user.click(screen.getByRole('button', { name: /Pay at a store/ }));
     await user.click(await screen.findByRole('button', { name: /Apple iPhone 17 256GB/ }));
-    await user.click(screen.getByRole('button', { name: 'Buy at ONOFF with your credit line' }));
+    await user.click(screen.getByRole('button', { name: /^Buy now at ONOFF/ }));
     const flow = screen.getByRole('dialog');
     await user.click(within(flow).getByRole('button', { name: 'Continue to ESTO' }));
     await user.click(within(flow).getByRole('button', { name: 'Smart-ID' }));
@@ -201,7 +201,11 @@ describe('shop prototype', () => {
       'href',
       'https://onoff.ee/iphone-17',
     );
-    expect(screen.queryByRole('button', { name: /with your credit line/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Buy now at ONOFF/ })).not.toBeInTheDocument();
+    // Phase 1 also shows what the product does to the limit, and offers the money for it.
+    expect(screen.getByText(/Your limit, if you pay with money from it/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /^Take out 1.079,00.€ for this product/ }));
+    expect(screen.getByText(/no money moves here/)).toBeInTheDocument();
     // Phase 2 parts do not show in Phase 1.
     const nav = screen.getByRole('navigation', { name: 'Main' });
     await user.click(within(nav).getByRole('button', { name: 'Credit Line' }));
@@ -247,6 +251,39 @@ describe('shop prototype', () => {
     expect(window.location.search).toBe('?phase=2');
     expect(await screen.findByRole('searchbox')).toBeInTheDocument();
     expect(screen.getByText('Prototype, Phase 2: Credit line at checkout')).toBeInTheDocument();
+  });
+
+  it('runs a guided tour that opens each page and points at one part of it', async () => {
+    window.history.replaceState(null, '', '/');
+    const user = userEvent.setup();
+    render(<ShopApp />);
+    await user.click(screen.getByRole('button', { name: 'Take the tour' }));
+
+    const card = await screen.findByRole('dialog', { name: 'The customer sees products on the Dashboard' });
+    expect(within(card).getByText('Phase 1, step 1 of 8')).toBeInTheDocument();
+    expect(window.location.search).toBe('?phase=1');
+    expect(window.location.hash).toBe('#/dashboard');
+    expect(within(card).queryByRole('button', { name: 'Back' })).not.toBeInTheDocument();
+
+    await user.click(within(card).getByRole('button', { name: 'Next: Find products' }));
+    expect(
+      screen.getByRole('dialog', { name: 'The customer searches products from partner stores' }),
+    ).toBeInTheDocument();
+    expect(await screen.findByRole('searchbox')).toBeInTheDocument();
+
+    // A later step opens a product page, and Phase 2 when the step needs it.
+    await user.click(screen.getByRole('button', { name: 'Next: A product' }));
+    expect(window.location.hash).toMatch(/^#\/p\//);
+    await user.click(screen.getByRole('button', { name: 'Next: Price alert' }));
+    // The tour changes to Phase 2 in a step of its own, on the same product page.
+    await user.click(screen.getByRole('button', { name: 'Next: Phase 2' }));
+    expect(window.location.search).toBe('?phase=2');
+    expect(window.location.hash).toMatch(/^#\/p\//);
+    expect(screen.getByText('Phase 2, step 5 of 8')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'End the tour' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Take the tour' })).toBeInTheDocument();
   });
 
   it('watches a price and shows an alert when the price goes down', async () => {

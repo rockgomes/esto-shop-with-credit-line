@@ -30,6 +30,8 @@ import { EstoBlocks, HowCard } from './DashboardBlocks';
 import LimitImpact from './LimitImpact';
 import { PHASES, readPhase, writePhase, type Phase } from './phase';
 import Start from './Start';
+import Tour from './Tour';
+import { TOUR } from './tourSteps';
 import { NO_FILTERS, search, type Filters, type SortKey } from './search';
 import {
   priceDrops,
@@ -156,6 +158,32 @@ export default function ShopApp() {
     window.scrollTo({ top: 0 });
   };
 
+  /** The step of the guided tour that shows now, or null when no tour runs. */
+  const [tour, setTour] = useState<number | null>(null);
+  const tourProductId =
+    load.status === 'ready'
+      ? search(load.catalog.products, '', {
+          compare: true,
+          inStock: true,
+          maxPrice: freeLimit(DEMO_ACCOUNT),
+        })[0]?.id
+      : undefined;
+  const goTour = (index: number) => {
+    const step = TOUR[index];
+    setTour(index);
+    pickPhase(step.phase, step.product ? tourProductId : undefined, step.hash ?? '#/');
+  };
+  /** The tour clicked its way to a step. Open the step directly only if the clicks did not get there. */
+  const arriveTour = (index: number) => {
+    const step = TOUR[index];
+    const hash = window.location.hash || '#/';
+    const there =
+      readPhase() === step.phase && (step.product ? hash.startsWith('#/p/') : hash === (step.hash ?? '#/'));
+    if (there) setTour(index);
+    else goTour(index);
+  };
+  const endTour = () => setTour(null);
+
   useEffect(() => {
     const onPop = () => setPhase(readPhase());
     window.addEventListener('popstate', onPop);
@@ -188,7 +216,13 @@ export default function ShopApp() {
     );
 
   if (phase === null) {
-    return <Start catalog={load.status === 'ready' ? load.catalog : null} onOpen={pickPhase} />;
+    return (
+      <Start
+        catalog={load.status === 'ready' ? load.catalog : null}
+        onOpen={pickPhase}
+        onTour={() => goTour(0)}
+      />
+    );
   }
 
   return (
@@ -196,7 +230,14 @@ export default function ShopApp() {
       <div className="app">
         <Sidebar page={route.page} onNavigate={navigate} onOther={notBuilt} />
         <div className="app-main">
-          <ProtoTag phase={phase} onPick={pickPhase} />
+          <ProtoTag
+            phase={phase}
+            onPick={(next) => {
+              if (next === null) endTour();
+              pickPhase(next);
+            }}
+            onTour={tour === null ? () => goTour(0) : undefined}
+          />
           {load.status === 'loading' && (
             <main className="page" aria-busy="true">
               <p className="status" role="status">
@@ -228,6 +269,7 @@ export default function ShopApp() {
               navigate={navigate}
               onOther={notBuilt}
               phase={phase}
+              inTour={tour !== null}
             />
           )}
           <p className="legal">
@@ -239,12 +281,22 @@ export default function ShopApp() {
           {notice}
         </p>
       </div>
+      {tour !== null && <Tour index={tour} onGo={goTour} onArrive={arriveTour} onEnd={endTour} />}
     </>
   );
 }
 
 /** One small line that says this is a prototype, and which phase it shows. */
-function ProtoTag({ phase, onPick }: { phase: Phase; onPick: (phase: Phase | null) => void }) {
+function ProtoTag({
+  phase,
+  onPick,
+  onTour,
+}: {
+  phase: Phase;
+  onPick: (phase: Phase | null) => void;
+  /** Starts the guided tour. Not given while a tour runs. */
+  onTour?: () => void;
+}) {
   const info = PHASES.find((p) => p.id === phase) ?? PHASES[0];
   const other: Phase = phase === 1 ? 2 : 1;
   return (
@@ -258,6 +310,11 @@ function ProtoTag({ phase, onPick }: { phase: Phase; onPick: (phase: Phase | nul
       <button className="link" onClick={() => onPick(null)}>
         About the concept
       </button>
+      {onTour && (
+        <button className="link" onClick={onTour}>
+          Take the tour
+        </button>
+      )}
     </p>
   );
 }
@@ -337,6 +394,7 @@ function Shop({
   navigate,
   onOther,
   phase,
+  inTour,
 }: {
   catalog: Catalog;
   history: PriceHistory;
@@ -344,11 +402,19 @@ function Shop({
   navigate: (hash: string) => void;
   onOther: (name: string) => void;
   phase: Phase;
+  /** True while the guided tour runs. */
+  inTour: boolean;
 }) {
   const [account, setAccount] = useState<Account>(DEMO_ACCOUNT);
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<Filters>(NO_FILTERS);
-  const [fitsOnly, setFitsOnly] = useState(false);
+  // The tour shows only products that fit the limit, so its example product always fits.
+  const [fitsOnly, setFitsOnly] = useState(inTour);
+  const [wasInTour, setWasInTour] = useState(inTour);
+  if (inTour !== wasInTour) {
+    setWasInTour(inTour);
+    if (inTour) setFitsOnly(true);
+  }
   const [sort, setSort] = useState<SortKey>('relevance');
   const [shown, setShown] = useState(PAGE_SIZE);
   const [watches, setWatches] = useState<Watch[]>(readWatches);
@@ -771,6 +837,8 @@ function ProductView({
   const [months, setMonths] = useState(DEFAULT_MONTHS);
   const [buying, setBuying] = useState(false);
   const [bought, setBought] = useState(false);
+  /** Phase 1: the customer asked to take the price of the product out of the limit. */
+  const [taking, setTaking] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
   const offer = product.offers[Math.min(offerIndex, product.offers.length - 1)];
   const p = plan(offer.price, account, months);
@@ -861,7 +929,7 @@ function ProductView({
                   <span className="offer-price">
                     <strong>{money(o.price)}</strong>
                     <span className="muted small">
-                      {money(plan(o.price, account, months).monthly)} / month
+                      from {money(minimumPayment(o.price, account.rate))} a month
                     </span>
                   </span>
                 </button>
@@ -874,24 +942,46 @@ function ProductView({
             )}
             {phase === 1 ? (
               <>
+                <LimitImpact account={account} price={offer.price} withCash />
                 <a className="btn buy" href={offer.url} target="_blank" rel="noopener noreferrer">
                   Go to {offer.store.name} to buy ↗
                 </a>
-                <p className="muted small pay-today">
-                  You pay at the {offer.store.name} checkout, as today. If you choose ESTO there, you apply
-                  and sign a new contract. Phase 2 removes both steps.
-                </p>
               </>
             ) : (
               <>
                 {!bought && <LimitImpact account={account} price={offer.price} />}
-                <button className="btn buy" disabled={bought} onClick={() => setBuying(true)}>
-                  {bought
-                    ? 'Paid (simulated)'
-                    : ok
-                      ? `Buy at ${offer.store.name} with your credit line`
-                      : `Buy at ${offer.store.name}`}
-                </button>
+                {ok && !bought ? (
+                  <button className="btn buy has-sub" onClick={() => setBuying(true)}>
+                    <span>Buy now at {offer.store.name} ↗</span>
+                    <span className="btn-sub">Use your credit line at checkout. No fees.</span>
+                  </button>
+                ) : (
+                  <button className="btn buy" disabled={bought} onClick={() => setBuying(true)}>
+                    {bought ? 'Paid (simulated)' : `Buy at ${offer.store.name}`}
+                  </button>
+                )}
+              </>
+            )}
+            {ok && !bought && (
+              <>
+                {phase === 1 ? (
+                  <button className="btn outline buy" onClick={() => setTaking(true)}>
+                    Take out {money(offer.price)} for this product
+                  </button>
+                ) : (
+                  <button className="btn outline buy has-sub" onClick={() => setTaking(true)}>
+                    <span>Take out {money(offer.price)} for this product</span>
+                    <span className="btn-sub">
+                      Money in bank account in 1-3 working days, or now for 19,90 €.
+                    </span>
+                  </button>
+                )}
+                {taking && (
+                  <p className="muted small pay-today" role="status">
+                    Prototype: no money moves here. In the app, the withdrawal opens with {money(offer.price)}{' '}
+                    filled in.
+                  </p>
+                )}
               </>
             )}
           </section>
@@ -1126,7 +1216,7 @@ function Transactions({ purchases, phase }: { purchases: Purchase[]; phase: Phas
                 <td colSpan={6} className="muted">
                   {phase === 2
                     ? 'No purchase yet. When you pay at a store from your credit line, it shows here as a row of the type "Purchase".'
-                    : 'Nothing to show in this prototype. Paying at a store from the credit line comes in Phase 2.'}
+                    : 'Nothing to show yet.'}
                 </td>
               </tr>
             )}
