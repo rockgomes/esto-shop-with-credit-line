@@ -5,8 +5,9 @@
  *   node scripts/build-catalog.mjs              download every feed
  *   node scripts/build-catalog.mjs --from DIR   read DIR/<store id>.xml instead (for local work)
  *
- * A store that fails keeps its offers from the previous catalog out of the
- * new one, and the script says so. It never invents data.
+ * The script tries each feed up to three times. If a feed still fails, the
+ * script writes nothing and exits with an error, so the previous catalog
+ * stays. A catalog never loses a store. It never invents data.
  */
 import { createReadStream, existsSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -62,21 +63,28 @@ async function readJson(file) {
 
 const allRows = [];
 const report = [];
+const TRIES = 3;
 for (const store of STORES) {
-  try {
-    const { rows, seen } = await readStore(store);
-    // Loop, not push(...rows): the largest feed has about a million rows.
-    for (const row of rows) allRows.push(row);
-    report.push({ store: store.id, rowsInFeed: seen, usableRows: rows.length });
-  } catch (error) {
-    report.push({ store: store.id, error: String(error.message ?? error) });
+  let lastError = '';
+  let done = false;
+  for (let attempt = 1; attempt <= TRIES && !done; attempt += 1) {
+    try {
+      const { rows, seen } = await readStore(store);
+      // Loop, not push(...rows): the largest feed has about a million rows.
+      for (const row of rows) allRows.push(row);
+      report.push({ store: store.id, rowsInFeed: seen, usableRows: rows.length, tries: attempt });
+      done = true;
+    } catch (error) {
+      lastError = String(error.message ?? error);
+    }
   }
+  if (!done) report.push({ store: store.id, error: lastError, tries: TRIES });
 }
 console.table(report);
 
-const working = report.filter((r) => !r.error).length;
-if (working < 2) {
-  console.error('Fewer than two feeds answered. Keeping the previous catalog.');
+const failed = report.filter((r) => r.error || !r.usableRows).map((r) => r.store);
+if (failed.length > 0) {
+  console.error(`No answer from: ${failed.join(', ')}. Nothing is written, and the previous catalog stays.`);
   process.exit(1);
 }
 
