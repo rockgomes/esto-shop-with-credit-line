@@ -399,7 +399,8 @@ export default function Start({
               <Pt n="2.8">
                 In a new part of the app, "Find products", the customer searches real products from partner
                 stores. They see the price at each store, the monthly price for them, and if the product fits
-                the free limit. {see(1, '#/', 'See Find products')}
+                the free limit. If the search finds no product, the page lists the partner stores, so the
+                customer can look there. {see(1, '#/', 'See Find products')}
               </Pt>
               <Pt n="2.9">
                 On the product page inside the ESTO app, one bar shows the limit before and after the
