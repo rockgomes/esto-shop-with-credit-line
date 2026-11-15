@@ -9,9 +9,11 @@
  * script writes nothing and exits with an error, so the previous catalog
  * stays. A catalog never loses a store. It never invents data.
  */
-import { createReadStream, existsSync } from 'node:fs';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { createReadStream, createWriteStream, existsSync } from 'node:fs';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
+import os from 'node:os';
 import path from 'node:path';
 import {
   STORES,
@@ -27,6 +29,9 @@ const OUT_DIR = path.resolve('public/data');
 const fromIndex = process.argv.indexOf('--from');
 const fromDir = fromIndex === -1 ? null : process.argv[fromIndex + 1];
 
+/** The feed files that this run saved to the temporary folder. */
+const downloaded = [];
+
 async function openFeed(store) {
   if (fromDir) return createReadStream(path.join(fromDir, `${store.id}.xml`));
   const response = await fetch(store.feed, {
@@ -34,7 +39,13 @@ async function openFeed(store) {
     signal: AbortSignal.timeout(10 * 60 * 1000),
   });
   if (!response.ok || !response.body) throw new Error(`HTTP ${response.status}`);
-  return Readable.fromWeb(response.body);
+  // Save the feed to a file first, then read the file. The largest feed is about
+  // 780 MB. When the script parsed it during the download, the download was slow,
+  // and the server closed the connection.
+  const file = path.join(os.tmpdir(), `feed-${store.id}-${process.pid}.xml`);
+  downloaded.push(file);
+  await pipeline(Readable.fromWeb(response.body), createWriteStream(file));
+  return createReadStream(file);
 }
 
 async function readStore(store) {
@@ -80,6 +91,7 @@ for (const store of STORES) {
   }
   if (!done) report.push({ store: store.id, error: lastError, tries: TRIES });
 }
+for (const file of downloaded) await rm(file, { force: true });
 console.table(report);
 
 const failed = report.filter((r) => r.error || !r.usableRows).map((r) => r.store);
