@@ -4,7 +4,7 @@ An unofficial concept for the ESTO **Product Builder** test: a working prototype
 
 By Rock Gomes, product designer. Portfolio: [rockgomes.com](https://www.rockgomes.com)
 
-**Open it:** [esto-shop-with-credit-line.netlify.app/shop/](https://esto-shop-with-credit-line.netlify.app/shop/)
+**Open it:** [esto-shop-with-credit-line.netlify.app](https://esto-shop-with-credit-line.netlify.app)
 
 > Not affiliated with or endorsed by ESTO. The customer, the limit, and the payments in the prototype are examples. Product data belongs to each store.
 
@@ -33,8 +33,6 @@ A credit line customer has a free limit, and the app gives it one action: take m
 npm install
 npm run dev
 ```
-
-Then open `/shop/`.
 
 ## Check it
 
@@ -65,7 +63,3 @@ Run `node scripts/build-catalog.mjs` to refresh the catalog by hand.
 ## Stack
 
 React 19, TypeScript, Vite, Vitest, and Testing Library. Plain CSS with custom properties, no UI library. Built with [Claude Code](https://claude.com/claude-code).
-
-## The first concept (at `/`)
-
-An earlier concept for the same test: the credit line withdrawal page, redesigned and built as a working prototype. It has the problem, the prototype in four languages, a spec, and how to measure it. Its code is in `src/components`, `src/lib`, and `src/i18n`.

@@ -4,3 +4,9 @@
 
 [build.environment]
   NODE_VERSION = "22"
+
+# The page lived at "/shop/" before. Old links go to the front page.
+[[redirects]]
+  from = "/shop/*"
+  to = "/"
+  status = 301
