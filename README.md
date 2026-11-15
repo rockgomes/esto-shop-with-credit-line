@@ -4,7 +4,7 @@ An unofficial concept for the ESTO **Product Builder** test: a working prototype
 
 By Rock Gomes, product designer. Portfolio: [rockgomes.com](https://www.rockgomes.com)
 
-**Open it:** [esto-withdrawal-concept.netlify.app/shop/](https://esto-withdrawal-concept.netlify.app/shop/)
+**Open it:** [esto-shop-with-credit-line.netlify.app/shop/](https://esto-shop-with-credit-line.netlify.app/shop/)
 
 > Not affiliated with or endorsed by ESTO. The customer, the limit, and the payments in the prototype are examples. Product data belongs to each store.
 
