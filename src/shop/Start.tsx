@@ -650,8 +650,8 @@ export default function Start({
                 Get the product feeds of the partner stores. I found the feeds for the prototype myself, and I
                 asked no store for anything. 6 ESTO partners publish an open feed in the Hinnavaatlus format:
                 ONOFF, Photopoint, Digioutlet, Apotheka, Laureen, and Laptopid. The prototype reads these 6
-                feeds once a day and holds 16,879 real products. ESTO can start with the same 6 feeds and ask
-                the other partners for the same file.
+                feeds once a day and holds about 17,000 real products. ESTO can start with the same 6 feeds
+                and ask the other partners for the same file.
               </Pt>
               <Pt n="5.4">
                 Add the "Find products" part to the app. The new part needs the customer's free limit and

@@ -45,18 +45,18 @@ CI runs the same steps on every push and pull request.
 
 ## How it is put together
 
-| File                                    | What it holds                                                                                    |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `scripts/build-catalog.mjs`             | Reads the store feeds and writes `public/data/catalog.json`.                                     |
-| `scripts/catalog-lib.mjs`               | Feed parsing, barcode matching, the listing rules, and price history. Pure functions with tests. |
-| `.github/workflows/refresh-catalog.yml` | Runs the script once a day and commits the result.                                               |
-| `src/shop/Start.tsx`                    | The start page with the write-up.                                                                |
-| `src/shop/ShopApp.tsx`                  | The pages of the prototype.                                                                      |
-| `src/shop/Tour.tsx`, `tourSteps.ts`     | The guided tour.                                                                                 |
-| `src/shop/Checkout.tsx`                 | Phase 2: the store checkout stand-in and ESTO's payment page.                                    |
-| `src/shop/search.ts`                    | Search, filters, and ranking.                                                                    |
-| `src/shop/credit.ts`                    | Free limit, payment plan, and lowest allowed payment.                                            |
-| `src/shop/watch.ts`                     | Price watch and price alerts.                                                                    |
+| File                                    | What it holds                                                                                                                                |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scripts/build-catalog.mjs`             | Reads the store feeds and writes `public/data/catalog.json`.                                                                                 |
+| `scripts/catalog-lib.mjs`               | Feed parsing, barcode matching, the listing rules, and price history. Pure functions with tests.                                             |
+| `.github/workflows/refresh-catalog.yml` | Can run the script on GitHub. It is off, because one store blocks requests from GitHub. A scheduled job on a Mac runs the script once a day. |
+| `src/shop/Start.tsx`                    | The start page with the write-up.                                                                                                            |
+| `src/shop/ShopApp.tsx`                  | The pages of the prototype.                                                                                                                  |
+| `src/shop/Tour.tsx`, `tourSteps.ts`     | The guided tour.                                                                                                                             |
+| `src/shop/Checkout.tsx`                 | Phase 2: the store checkout stand-in and ESTO's payment page.                                                                                |
+| `src/shop/search.ts`                    | Search, filters, and ranking.                                                                                                                |
+| `src/shop/credit.ts`                    | Free limit, payment plan, and lowest allowed payment.                                                                                        |
+| `src/shop/watch.ts`                     | Price watch and price alerts.                                                                                                                |
 
 Run `node scripts/build-catalog.mjs` to refresh the catalog by hand.
 
