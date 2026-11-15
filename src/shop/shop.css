@@ -594,6 +594,16 @@ a {
   overflow: hidden;
 }
 
+/* A card can be a link, for example to a store. It keeps the look of a card. */
+a.card {
+  color: inherit;
+  text-decoration: none;
+}
+
+.panel > .grid {
+  margin-top: 16px;
+}
+
 .product {
   display: flex;
   flex-direction: column;

@@ -608,11 +608,18 @@ function Shop({
               </div>
             </section>
 
-            <p className="status" role="status" aria-live="polite">
+            <p
+              className={results.length === 0 && query ? 'status visually-hidden' : 'status'}
+              role="status"
+              aria-live="polite"
+            >
               {results.length === 0
-                ? 'No product matches. Try a shorter search, or turn a filter off.'
+                ? query
+                  ? `No product matches “${query}”. Try a shorter search, or turn a filter off.`
+                  : 'No product matches. Turn a filter off.'
                 : `${results.length.toLocaleString('en-GB')} ${results.length === 1 ? 'product' : 'products'}${query ? ` for “${query}”` : ''}`}
             </p>
+            {results.length === 0 && query && <StoreList catalog={catalog} query={query} />}
             <div className="grid">
               {results.slice(0, shown).map((p) => (
                 <ProductCard
@@ -823,6 +830,68 @@ function FitBadge({ price, account }: { price: Cents; account: Account }) {
     <span className="badge ok">Fits your limit</span>
   ) : (
     <span className="badge no">Above your free limit</span>
+  );
+}
+
+/**
+ * The message for a search with no product, and the partner stores. Each card says how many
+ * products of the store are in the catalog, and its three largest categories.
+ */
+function StoreList({ catalog, query }: { catalog: Catalog; query: string }) {
+  const stores = useMemo(() => {
+    const byStore = new Map<string, { count: number; categories: Map<string, number> }>();
+    for (const product of catalog.products) {
+      for (const offer of product.offers) {
+        const entry = byStore.get(offer.store.id) ?? { count: 0, categories: new Map<string, number>() };
+        entry.count += 1;
+        if (product.category) {
+          entry.categories.set(product.category, (entry.categories.get(product.category) ?? 0) + 1);
+        }
+        byStore.set(offer.store.id, entry);
+      }
+    }
+    return catalog.stores
+      .map((store) => {
+        const entry = byStore.get(store.id);
+        const top = [...(entry?.categories ?? [])].sort((x, y) => y[1] - x[1]).slice(0, 3);
+        return { store, count: entry?.count ?? 0, top: top.map(([name]) => name) };
+      })
+      .sort((x, y) => y.count - x.count);
+  }, [catalog]);
+
+  return (
+    <section className="panel" aria-labelledby="stores-title">
+      <div className="panel-head">
+        <h2 id="stores-title">No product matches “{query}”</h2>
+      </div>
+      <p className="muted">Try a shorter search, or turn a filter off.</p>
+      <h3>These ESTO partner stores can have it</h3>
+      <p className="muted">
+        The search looks in the products of {stores.length} stores. Each store sells more products than the
+        search knows. Open a store and search there.
+      </p>
+      <div className="grid">
+        {stores.map(({ store, count, top }) => (
+          <a
+            key={store.id}
+            className="card product"
+            href={store.site}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span className="pic pic-card pic-empty" aria-hidden="true">
+              {store.name.slice(0, 1)}
+            </span>
+            <span className="product-body">
+              <span className="product-name">{store.name}</span>
+              <span className="muted small">{top.join(', ')}</span>
+              <span className="muted small">{count.toLocaleString('en-GB')} products in this search</span>
+              <span className="link">Open {new URL(store.site).hostname.replace(/^www\./, '')}</span>
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
   );
 }
 
