@@ -115,8 +115,10 @@ function More({ label, children }: { label: string; children: ReactNode }) {
 
 /** One numbered point of the write-up. */
 function Pt({ n, children }: { n: string; children: ReactNode }) {
+  // A number with three parts, such as 4.7.1, is a sub-point of 4.7.
+  const sub = n.split('.').length > 2;
   return (
-    <li>
+    <li className={sub ? 'sub' : undefined}>
       <b>{n}</b>
       <span>{children}</span>
     </li>
@@ -529,7 +531,7 @@ export default function Start({
               step "Confirm who you are" are stand-ins, and no order is made.
             </p>
             <p>I also looked at three other ideas, and I did not choose them.</p>
-            <More label="all seven things, the three other ideas, and why this one">
+            <More label="all six things, the three other ideas, why this one, and the edge cases">
               <Pt n="4.1">
                 I did not build real payment. The store checkout and the ESTO payment page in Phase 2 are
                 stand-ins, and no order is made. A real one needs ESTO's systems.
@@ -545,42 +547,78 @@ export default function Start({
                 <S n={3} />
               </Pt>
               <Pt n="4.5">
-                I did not check the phone layout by hand, and I did not test with a screen reader. Only
-                automatic checks ran.
-              </Pt>
-              <Pt n="4.6">
                 I did not rebuild the other ESTO methods at checkout: hire purchase, ESTO 3, and Pay Later.
                 The concept does not change them.
               </Pt>
-              <Pt n="4.7">
+              <Pt n="4.6">
                 I did not design a card. Other companies use a one-time card to pay anywhere. I found no ESTO
                 source that talks about a card.
               </Pt>
-              <Pt n="4.8">I also looked at three other ideas, and I did not choose them.</Pt>
-              <Pt n="4.8.1">
+              <Pt n="4.7">I also looked at three other ideas, and I did not choose them.</Pt>
+              <Pt n="4.7.1">
                 Switch: the customer turns a purchase that they already paid with their own money into credit.
                 ESTO showed this idea in its 2022 company deck.
                 <S n={7} /> Revolut, Affirm, and Curve do it, but only for purchases on their own card. ESTO
                 has no card and no live bank connection. So the customer would have to upload a bank statement
                 by hand, and that is too much work for them.
               </Pt>
-              <Pt n="4.8.2">
+              <Pt n="4.7.2">
                 Pay any invoice: the customer pays any bill from the credit line. Twisto, Zip, and Holm Bank
                 already offer this. It is a good idea, but it uses only half of what ESTO has. ESTO's CEO
                 wants to turn "the user base and merchant network" into credit line revenue.
                 <S n={2} /> Pay any invoice uses the customers and leaves the partner stores out.
               </Pt>
-              <Pt n="4.8.3">
+              <Pt n="4.7.3">
                 A card: the customer pays anywhere with a one-time card from the limit. Twisto and Zip do
                 this. I found no ESTO source that talks about a card, and I do not know if ESTO's licence
                 allows one.
               </Pt>
-              <Pt n="4.9">
+              <Pt n="4.8">
                 I chose "Shop with your credit line" for three reasons. First, the prototype is real: it runs
                 on today's products and prices from ESTO partner stores. Second, it aims at real money: about
                 150 million euros of limits that are not used.
                 <S n={1} /> Third, the effort is low for what it can return. Phase 1 needs nothing new from
                 the stores. It uses the store feeds, the app, and the limits that already exist.
+              </Pt>
+              <Pt n="4.9">
+                The prototype shows the main path: the customer finds a product, buys it, and pays it back. I
+                know of seven edge cases. I did not include them, so that the concept stays easy to
+                understand. Each case is below, with one possible way to handle it.
+              </Pt>
+              <Pt n="4.9.1">
+                The customer returns the product (Phase 2). The store reports the return, and the amount goes
+                back into the customer's limit. Hire purchase, ESTO 3, and Pay Later have returns too, so a
+                process for returns probably exists already.
+              </Pt>
+              <Pt n="4.9.2">
+                The cart costs more than the product (Phase 2). The customer adds delivery or a second product
+                at the store. At the store checkout, the customer chooses ESTO, and the store sends them to
+                ESTO's payment page. That page shows the full amount of the cart, and the limit before and
+                after that amount. If the amount is higher than the free limit, the page says how much is
+                missing and offers the other methods.
+              </Pt>
+              <Pt n="4.9.3">
+                The price at the store is different (both phases). The app reads the store feeds once a day,
+                and a store can change a price in between. So the app shows the time when it last read the
+                price, and it says that the price at the store is the one that counts.
+              </Pt>
+              <Pt n="4.9.4">
+                The product is sold out at the store (both phases). The cause is the same as in 4.9.3: the app
+                reads the feeds once a day, so it can show a product that the store sold out an hour ago. The
+                customer learns this at the store. They can go back to the product page in the app, which
+                lists the other stores that sell the same product.
+              </Pt>
+              <Pt n="4.9.5">
+                The store cancels the order after the customer paid (Phase 2). The amount goes back into the
+                limit, as with a return.
+              </Pt>
+              <Pt n="4.9.6">
+                The customer has a late payment (both phases). ESTO decides the rule. One possible rule: the
+                customer cannot buy with the credit line until they pay the late amount.
+              </Pt>
+              <Pt n="4.9.7">
+                The feed of a store stops working (both phases). The app hides the products of that store when
+                the last feed is too old.
               </Pt>
             </More>
           </section>
@@ -594,7 +632,7 @@ export default function Start({
               prototype myself, and I asked no store for anything.
             </p>
             <p>Phase 2 has five steps. Three of them need an answer from ESTO.</p>
-            <More label="the nine steps">
+            <More label="the nine steps, and the challenges of Phase 2">
               <Pt n="5.1">Phase 1 has four steps:</Pt>
               <Pt n="5.2">
                 Get the product feeds of the partner stores. I found the feeds for the prototype myself, and I
@@ -631,6 +669,25 @@ export default function Start({
               <Pt n="5.11">
                 Show the method to a small group of customers first, at every store, and measure the numbers
                 in part 3.
+              </Pt>
+              <Pt n="5.12">
+                Phase 2 has two challenges. Each one needs people and time from ESTO. I cannot say how much,
+                because that depends on ESTO's systems.
+              </Pt>
+              <Pt n="5.12.1">
+                The signature. The concept promises that the customer signs no new contract for a purchase. I
+                could not confirm that the law allows this. If the law needs a signature for each purchase,
+                the credit line is as much work for the customer as hire purchase, and Phase 2 loses its main
+                advantage.
+              </Pt>
+              <Pt n="5.12.2">
+                The payment page. The page must read the free limit at the moment of the purchase. It must
+                also hold the amount until the store confirms the order, so that the customer cannot use the
+                same money two times. The team that owns the payment page builds this.
+              </Pt>
+              <Pt n="5.13">
+                The answer to 5.12.1 decides how long Phase 2 takes. So ESTO gets this answer first, while
+                Phase 1 runs.
               </Pt>
             </More>
           </section>
@@ -672,7 +729,7 @@ export default function Start({
             <h2 id="p7-h" tabIndex={-1}>
               7. Business case
             </h2>
-            <p>Part 7 is arithmetic on ESTO's own numbers, and not a forecast.</p>
+            <p>Part 7 is a simple calculation with ESTO's own numbers. It is not a forecast.</p>
             <ul className="wu-nums">
               <li>
                 <strong>1.5 million €</strong>
@@ -713,6 +770,10 @@ export default function Start({
               <Pt n="8.2">Still open: I do not know what ESTO sends a customer after a purchase.</Pt>
               <Pt n="8.3">
                 Still open: I do not know if ESTO has a phone app. I found none in the app stores.
+              </Pt>
+              <Pt n="8.4">
+                Still open: I do not know if ESTO checks the customer's credit again before a withdrawal
+                today. A purchase with the credit line would follow the same rule.
               </Pt>
             </More>
           </section>

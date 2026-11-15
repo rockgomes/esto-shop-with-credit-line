@@ -1088,7 +1088,6 @@ input[type='range'] {
 }
 
 .wu-book {
-  max-width: 720px;
   margin: 40px 0 0;
 }
 
@@ -1227,6 +1226,17 @@ a.src:hover {
   grid-template-columns: 44px minmax(0, 1fr);
   gap: 8px;
   max-width: 72ch;
+}
+
+/* A sub-point starts where the text of its parent point starts. */
+.wu-pts > li.sub {
+  margin-left: 52px;
+}
+
+@media (max-width: 600px) {
+  .wu-pts > li.sub {
+    margin-left: 20px;
+  }
 }
 
 .wu-pts > li > b {
