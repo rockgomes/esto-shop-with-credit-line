@@ -538,8 +538,10 @@ export default function Start({
               </Pt>
               <Pt n="4.2">I did not build real login. The step "Confirm who you are" is a stand-in.</Pt>
               <Pt n="4.3">
-                I did not include stores without an open product feed. The prototype has 6 stores. Other
-                stores need an agreement or another data source.
+                {' '}
+                I did not include stores without an open product feed. The prototype has 6 stores, and all 6
+                are in Estonia. Other stores need an agreement or another data source. I did not check which
+                product feeds exist in Latvia and Lithuania.
               </Pt>
               <Pt n="4.4">
                 I did not use the customer's own interest rate. The prototype uses 37.10%, the highest rate in
@@ -628,65 +630,91 @@ export default function Start({
               5. How to get it live
             </h2>
             <p>
-              Phase 1 has four steps and needs nothing new from the stores. I found the product feeds for the
+              Phase 1 has five steps and needs nothing new from the stores. I found the product feeds for the
               prototype myself, and I asked no store for anything.
             </p>
             <p>Phase 2 has five steps. Three of them need an answer from ESTO.</p>
-            <More label="the nine steps, and the challenges of Phase 2">
-              <Pt n="5.1">Phase 1 has four steps:</Pt>
+            <More label="the ten steps, who does what, and the challenges of Phase 2">
+              <Pt n="5.1">Phase 1 has five steps:</Pt>
               <Pt n="5.2">
+                Test the prototype before engineers build anything. The test has two rounds. First, I test
+                inside ESTO, with people from other teams. This round is fast, and it finds the obvious
+                problems. Second, I test with 5 to 8 credit line customers. In both rounds, each person gets
+                one task: find a product that fits your limit, and tell me how you would buy it. I watch where
+                they stop and what they do not understand, and I change the prototype between the rounds. The
+                prototype runs on real products, so this test needs no work from engineers. I have not done
+                this test yet.
+              </Pt>
+              <Pt n="5.3">
                 Get the product feeds of the partner stores. I found the feeds for the prototype myself, and I
                 asked no store for anything. 6 ESTO partners publish an open feed in the Hinnavaatlus format:
                 ONOFF, Photopoint, Digioutlet, Apotheka, Laureen, and Laptopid. The prototype reads these 6
                 feeds once a day and holds 16,879 real products. ESTO can start with the same 6 feeds and ask
                 the other partners for the same file.
               </Pt>
-              <Pt n="5.3">
+              <Pt n="5.4">
                 Add the "Find products" part to the app. The new part needs the customer's free limit and
                 rate, and the app already has both.
               </Pt>
-              <Pt n="5.4">Send the price alert by email.</Pt>
-              <Pt n="5.5">Show the new part to a small group first, and measure the numbers in part 3.</Pt>
-              <Pt n="5.6">Phase 2 has five steps:</Pt>
-              <Pt n="5.7">
+              <Pt n="5.5">Send the price alert by email.</Pt>
+              <Pt n="5.6">Show the new part to a small group first, and measure the numbers in part 3.</Pt>
+              <Pt n="5.7">Phase 2 has five steps:</Pt>
+              <Pt n="5.8">
                 Add "Credit line" as a method on ESTO's own payment page. The customer sees their own free
                 limit there, after they confirm who they are.
               </Pt>
-              <Pt n="5.8">
+              <Pt n="5.9">
                 Name the credit line on the store's product page, in general words. Stores already show ESTO
                 there today: Medpoint and Laptopid show an ESTO monthly-payment calculator. If the store must
                 update its plugin for the new text is not confirmed.
               </Pt>
-              <Pt n="5.9">
+              <Pt n="5.10">
                 Check with legal if each purchase needs a signature. The need for a signature is not
                 confirmed.
               </Pt>
-              <Pt n="5.10">
+              <Pt n="5.11">
                 Check if a store must change anything at its checkout. ESTO's developer page says the payment
                 page "already includes every method enabled on your account".
                 <S n={5} /> What a store must change is not confirmed.
               </Pt>
-              <Pt n="5.11">
+              <Pt n="5.12">
                 Show the method to a small group of customers first, at every store, and measure the numbers
                 in part 3.
               </Pt>
-              <Pt n="5.12">
+              <Pt n="5.13">Who does what.</Pt>
+              <Pt n="5.13.1">
+                What I build myself: the prototype, the test with customers, the design of every page, and the
+                first version of the job that reads the store feeds. I also write down what we count in the
+                test in part 3.
+              </Pt>
+              <Pt n="5.13.2">
+                What I hand over to engineers: "Find products" inside the real app, with the customer's real
+                limit and rate. The price alert email. The job that reads the feeds, so that it runs in ESTO's
+                systems every day and warns someone when a feed stops. In Phase 2, the new method on the
+                payment page.
+              </Pt>
+              <Pt n="5.13.3">
+                Who I involve: the product team that owns the credit line, because this concept works on their
+                goal. The payments team, for the payment page in Phase 2. Compliance, for the question about
+                the signature. The people who work with the partner stores, for the feeds.
+              </Pt>
+              <Pt n="5.14">
                 Phase 2 has two challenges. Each one needs people and time from ESTO. I cannot say how much,
                 because that depends on ESTO's systems.
               </Pt>
-              <Pt n="5.12.1">
+              <Pt n="5.14.1">
                 The signature. The concept promises that the customer signs no new contract for a purchase. I
                 could not confirm that the law allows this. If the law needs a signature for each purchase,
                 the credit line is as much work for the customer as hire purchase, and Phase 2 loses its main
                 advantage.
               </Pt>
-              <Pt n="5.12.2">
+              <Pt n="5.14.2">
                 The payment page. The page must read the free limit at the moment of the purchase. It must
                 also hold the amount until the store confirms the order, so that the customer cannot use the
                 same money two times. The team that owns the payment page builds this.
               </Pt>
-              <Pt n="5.13">
-                The answer to 5.12.1 decides how long Phase 2 takes. So ESTO gets this answer first, while
+              <Pt n="5.15">
+                The answer to 5.14.1 decides how long Phase 2 takes. So ESTO gets this answer first, while
                 Phase 1 runs.
               </Pt>
             </More>
@@ -697,11 +725,14 @@ export default function Start({
               6. How I used AI
             </h2>
             <p>
-              I worked with Claude Code for the research, the data, the prototype, and the drafts. The
-              prototype did not come from one prompt. Without someone to steer it, Claude goes wrong: Claude
-              invents data and builds things nobody asked for.
+              I used three tools. I used Claude Code for the research, the code, the tests, and the first
+              drafts of the text. Claude Code also wrote the program that reads the product feeds of the
+              stores each day. I used Figma to try and correct the design of new pages before Claude built
+              them. I used Mobbin to see how other apps solve the same pages. The prototype did not come from
+              one prompt. Without someone to steer it, Claude goes wrong: Claude invents data and builds
+              things nobody asked for.
             </p>
-            <More label="who did what, and what went wrong">
+            <More label="who did what, what worked, what went wrong, and what I threw away">
               <Pt n="6.2">
                 For the research, Claude read ESTO's public pages, the bond deck, and competitor products.
                 Claude and I both checked every claim against the source. Several first claims were wrong, and
@@ -721,6 +752,20 @@ export default function Start({
                 Claude invents data and builds things nobody asked for. Claude invented a purchase step, an
                 interest rate, and a "transactions" page before Claude had checked the real ones. I caught
                 these, and we fixed them from the real app.
+              </Pt>
+              <Pt n="6.6">
+                Three things worked well. First, research with sources: each claim kept its link, so I could
+                check it. Second, real data: Claude found the open store feeds, and the prototype ran on real
+                products two days after I got the task. Third, fast changes: I saw a page in the browser, said
+                what was wrong, and saw the fix in minutes.
+              </Pt>
+              <Pt n="6.7">
+                I threw away ideas and features to keep the concept small. The first draft showed a list of
+                partner stores where the customer can spend the limit. I changed it to a product search,
+                because a product is a stronger reason to use the limit than a store. I also built a first
+                draft of Switch, where the customer connects their bank and turns a past purchase into credit.
+                I stopped it, because ESTO has no bank connection today. I planned a card as a third phase,
+                and I cut it to one line in part 4.
               </Pt>
             </More>
           </section>
