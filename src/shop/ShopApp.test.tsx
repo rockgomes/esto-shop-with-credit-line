@@ -42,6 +42,19 @@ describe('shop prototype', () => {
     expect(screen.queryByRole('button', { name: /iPhone 17 256GB/ })).not.toBeInTheDocument();
   });
 
+  it('lists the partner stores when a search finds no product', async () => {
+    const user = userEvent.setup();
+    render(<ShopApp />);
+    await user.type(await screen.findByRole('searchbox'), 'kayak');
+    expect(screen.getByRole('heading', { name: 'No product matches “kayak”' })).toBeInTheDocument();
+    const block = within(screen.getByRole('region', { name: 'No product matches “kayak”' }));
+    const onoff = block.getByRole('link', { name: /ONOFF/ });
+    expect(onoff).toHaveAttribute('href', 'https://onoff.ee');
+    expect(onoff).toHaveTextContent('2 products in this search');
+    expect(onoff).toHaveTextContent('Nutitelefonid, Kaitseklaasid');
+    expect(block.getByRole('link', { name: /Photopoint/ })).toHaveTextContent('Open photopoint.ee');
+  });
+
   it('compares stores, then pays from the credit line on the ESTO payment page (phase 2)', async () => {
     const user = userEvent.setup();
     render(<ShopApp />);
